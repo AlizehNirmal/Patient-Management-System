@@ -74,7 +74,7 @@ src/
 
 ## Demo credentials
 
-TODO: add the seed account emails and the shared demo password once the seed script is written.
+See the demo accounts table in the README at the root of the repository.
 
 ## Live link
 

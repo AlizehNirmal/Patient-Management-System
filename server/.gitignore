@@ -3,3 +3,6 @@ node_modules
 .env
 
 /generated/prisma
+
+# Local development database (npm run db)
+.pgdata

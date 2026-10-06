@@ -78,7 +78,7 @@ model Doctor {
   accessRequests     AccessRequest[]
 }
 
-model Allergy {2
+model Allergy {
   id        Int     @id @default(autoincrement())
   patientId Int
   patient   Patient @relation(fields: [patientId], references: [id])

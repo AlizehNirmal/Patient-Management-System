@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import api, { getError, dropEmpty } from '../../api/axios';
+import api, { getError } from '../../api/axios';
 import CrudList from '../../components/CrudList';
 import { Page, Card, Field, Loading, ErrorMsg, SuccessMsg, inputCls, btnCls, fmtDate } from '../../components/UI';
 
@@ -39,9 +39,10 @@ export default function Profile() {
     setError('');
     setSaved(false);
     try {
-      const body = { ...form };
-      delete body.healthId;
-      await api.put('/patients/me', dropEmpty(body));
+      // A cleared field is sent as null so the server empties it
+      const body = {};
+      fields.forEach(([name]) => (body[name] = form[name] === '' ? null : form[name]));
+      await api.put('/patients/me', body);
       setSaved(true);
     } catch (err) {
       setError(getError(err));
