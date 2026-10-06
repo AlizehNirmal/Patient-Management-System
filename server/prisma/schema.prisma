@@ -1,0 +1,162 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AccessStatus {
+  PENDING
+  APPROVED
+  DENIED
+  REVOKED
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  role         Role
+  createdAt    DateTime @default(now())
+  patient      Patient?
+  doctor       Doctor?
+}
+
+model Patient {
+  id                    Int             @id @default(autoincrement())
+  userId                Int             @unique
+  user                  User            @relation(fields: [userId], references: [id])
+  healthId              String          @unique
+  qrToken               String          @unique @default(uuid())
+  fullName              String
+  dob                   DateTime?
+  gender                String?
+  phone                 String?
+  bloodGroup            String?
+  address               String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  emergencyCardEnabled  Boolean         @default(true)
+  allergies             Allergy[]
+  conditions            Condition[]
+  records               MedicalRecord[]
+  accessRequests        AccessRequest[]
+  logs                  AccessLog[]
+}
+
+model Doctor {
+  id                 Int                @id @default(autoincrement())
+  userId             Int                @unique
+  user               User               @relation(fields: [userId], references: [id])
+  fullName           String
+  specialization     String
+  licenseNo          String
+  hospitalName       String
+  verificationStatus VerificationStatus @default(PENDING)
+  verifiedAt         DateTime?
+  records            MedicalRecord[]
+  accessRequests     AccessRequest[]
+}
+
+model Allergy {
+  id        Int     @id @default(autoincrement())
+  patientId Int
+  patient   Patient @relation(fields: [patientId], references: [id])
+  allergen  String
+  reaction  String?
+  severity  String?
+}
+
+model Condition {
+  id          Int       @id @default(autoincrement())
+  patientId   Int
+  patient     Patient   @relation(fields: [patientId], references: [id])
+  name        String
+  diagnosedOn DateTime?
+  status      String?
+}
+
+model MedicalRecord {
+  id             Int            @id @default(autoincrement())
+  patientId      Int
+  patient        Patient        @relation(fields: [patientId], references: [id])
+  doctorId       Int
+  doctor         Doctor         @relation(fields: [doctorId], references: [id])
+  hospitalName   String
+  visitDate      DateTime       @default(now())
+  chiefComplaint String
+  diagnosis      String
+  notes          String?
+  followUpDate   DateTime?
+  prescriptions  Prescription[]
+}
+
+model Prescription {
+  id       Int                @id @default(autoincrement())
+  recordId Int
+  record   MedicalRecord      @relation(fields: [recordId], references: [id])
+  issuedAt DateTime           @default(now())
+  items    PrescriptionItem[]
+}
+
+model PrescriptionItem {
+  id             Int          @id @default(autoincrement())
+  prescriptionId Int
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  medicineName   String
+  dosage         String
+  frequency      String
+  durationDays   Int?
+  instructions   String?
+}
+
+model AccessRequest {
+  id          Int          @id @default(autoincrement())
+  patientId   Int
+  patient     Patient      @relation(fields: [patientId], references: [id])
+  doctorId    Int
+  doctor      Doctor       @relation(fields: [doctorId], references: [id])
+  status      AccessStatus @default(PENDING)
+  reason      String?
+  requestedAt DateTime     @default(now())
+  approvedAt  DateTime?
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  @@index([patientId, doctorId, status])
+}
+
+model AccessLog {
+  id           Int      @id @default(autoincrement())
+  patientId    Int
+  patient      Patient  @relation(fields: [patientId], references: [id])
+  actorUserId  Int
+  actorName    String
+  action       String
+  resourceType String?
+  resourceId   Int?
+  isEmergency  Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([patientId, createdAt])
+}
