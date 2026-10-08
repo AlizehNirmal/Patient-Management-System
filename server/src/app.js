@@ -27,7 +27,6 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Not found' });
 });
 
-// All errors end up here and always look like { error: "message" }
 app.use((err, req, res, next) => {
   if (err instanceof ZodError) {
     const issue = err.issues[0];
