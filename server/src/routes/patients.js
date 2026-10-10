@@ -4,6 +4,8 @@ const HttpError = require('../utils/httpError');
 const validate = require('../middleware/validate');
 const { authenticate, requireRole } = require('../middleware/auth');
 const { loadPatient } = require('../middleware/loadProfile');
+const upload = require('../middleware/upload');
+const { details, listDocuments, sendDocument } = require('../services/documents');
 const schemas = require('../validators/schemas');
 
 const router = express.Router();
@@ -64,6 +66,40 @@ function listAddDelete(path, model, schema) {
 }
 listAddDelete('allergies', prisma.allergy, schemas.allergy);
 listAddDelete('conditions', prisma.condition, schemas.condition);
+
+// ---------- Documents (uploaded reports, prescriptions, test results) ----------
+router.get('/me/documents', async (req, res) => {
+  res.json(await listDocuments(req.patient.id));
+});
+
+router.post('/me/documents', upload, validate(schemas.document), async (req, res) => {
+  if (!req.file) throw new HttpError(400, 'Please choose a file');
+
+  const created = await prisma.document.create({
+    data: {
+      ...req.body, // title and category
+      patientId: req.patient.id,
+      fileName: req.file.originalname,
+      mimeType: req.file.mimetype,
+      size: req.file.size,
+      data: req.file.buffer,
+    },
+    select: details,
+  });
+  res.status(201).json(created);
+});
+
+router.get('/me/documents/:id/file', async (req, res) => {
+  await sendDocument(res, Number(req.params.id), req.patient.id);
+});
+
+router.delete('/me/documents/:id', async (req, res) => {
+  const result = await prisma.document.deleteMany({
+    where: { id: toId(req.params.id), patientId: req.patient.id },
+  });
+  if (result.count === 0) throw new HttpError(404, 'Not found');
+  res.json({ success: true });
+});
 
 // ---------- Timeline and access log ----------
 router.get('/me/records', async (req, res) => {

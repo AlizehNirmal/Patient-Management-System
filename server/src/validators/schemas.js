@@ -63,6 +63,11 @@ const condition = z.object({
 
 const emergencyCard = z.object({ enabled: z.boolean() });
 
+const document = z.object({
+  title: text(100),
+  category: z.enum(['Report', 'Prescription', 'Test result', 'Other']),
+});
+
 // ---------- Access ----------
 const accessRequest = z.object({
   healthId: text(20),
@@ -97,6 +102,6 @@ const record = z.object({
 const verifyDoctor = z.object({ status: z.enum(['APPROVED', 'REJECTED']) });
 
 module.exports = {
-  register, login, profile, allergy, condition, emergencyCard,
+  register, login, profile, allergy, condition, emergencyCard, document,
   accessRequest, approve, record, verifyDoctor,
 };

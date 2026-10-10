@@ -4,7 +4,8 @@ require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const prisma = require('../src/config/db');
 
-const DEMO_PASSWORD = 'Demo@1234';
+// On a public deployment, set SEED_PASSWORD so the accounts do not use the password written here
+const DEMO_PASSWORD = process.env.SEED_PASSWORD || 'Demo@1234';
 
 async function main() {
   const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10); // same hashing as the register endpoint

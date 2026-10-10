@@ -7,6 +7,7 @@ const links = {
     ['/patient/profile', 'Profile'],
     ['/patient/card', 'Health card'],
     ['/patient/timeline', 'Timeline'],
+    ['/patient/documents', 'Documents'],
     ['/patient/logs', 'Access log'],
   ],
   DOCTOR: [

@@ -5,6 +5,7 @@ const { authenticate, requireRole } = require('../middleware/auth');
 const { loadApprovedDoctor } = require('../middleware/loadProfile');
 const hasActiveGrant = require('../middleware/hasActiveGrant');
 const logAccess = require('../services/accessLog');
+const { listDocuments, sendDocument } = require('../services/documents');
 const schemas = require('../validators/schemas');
 
 const router = express.Router();
@@ -57,6 +58,26 @@ router.get('/patients/:healthId/records', guard, async (req, res) => {
   });
   await logView(req);
   res.json(records);
+});
+
+// GET /api/doctors/patients/:healthId/documents  (files the patient uploaded)
+router.get('/patients/:healthId/documents', guard, async (req, res) => {
+  const documents = await listDocuments(req.patient.id);
+  await logView(req);
+  res.json(documents);
+});
+
+// GET /api/doctors/patients/:healthId/documents/:id/file
+router.get('/patients/:healthId/documents/:id/file', guard, async (req, res) => {
+  const doc = await sendDocument(res, Number(req.params.id), req.patient.id);
+  await logAccess({
+    patientId: req.patient.id,
+    actorUserId: req.user.id,
+    actorName: `Dr. ${req.doctor.fullName}`,
+    action: `opened the document "${doc.title}"`,
+    resourceType: 'Document',
+    resourceId: doc.id,
+  });
 });
 
 // POST /api/doctors/patients/:healthId/records  (visit + prescription in one request)

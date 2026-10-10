@@ -1,11 +1,38 @@
+import { useState } from 'react';
 import useFetch from '../../hooks/useFetch';
-import { Page, Card, Loading, ErrorMsg, Empty, fmtDate } from '../../components/UI';
+import { getError } from '../../api/axios';
+import downloadHealthSummary from '../../utils/healthSummaryPdf';
+import { Page, Card, Loading, ErrorMsg, Empty, btnCls, fmtDate } from '../../components/UI';
 
 export default function Timeline() {
   const { data, loading, error } = useFetch('/patients/me/records');
+  const [pdfError, setPdfError] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function downloadPdf() {
+    setPdfError('');
+    setBusy(true);
+    try {
+      await downloadHealthSummary();
+    } catch (err) {
+      setPdfError(getError(err));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <Page title="My visit timeline">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-slate-600">
+          Download your profile, allergies, conditions, visits and prescriptions as one PDF to share.
+        </p>
+        <button className={btnCls} onClick={downloadPdf} disabled={busy}>
+          {busy ? 'Preparing...' : 'Download health summary (PDF)'}
+        </button>
+      </div>
+      <ErrorMsg>{pdfError}</ErrorMsg>
+
       {loading && <Loading />}
       <ErrorMsg>{error}</ErrorMsg>
       {data && data.length === 0 && <Empty>No visits recorded yet.</Empty>}

@@ -62,6 +62,7 @@ model Patient {
   records               MedicalRecord[]
   accessRequests        AccessRequest[]
   logs                  AccessLog[]
+  documents             Document[]
 }
 
 model Doctor {
@@ -159,4 +160,21 @@ model AccessLog {
   createdAt    DateTime @default(now())
 
   @@index([patientId, createdAt])
+}
+
+// A file the patient uploaded (report, prescription, test result).
+// The file itself is kept in the "data" column, so no extra storage service is needed.
+model Document {
+  id         Int      @id @default(autoincrement())
+  patientId  Int
+  patient    Patient  @relation(fields: [patientId], references: [id])
+  title      String
+  category   String
+  fileName   String
+  mimeType   String
+  size       Int
+  data       Bytes
+  uploadedAt DateTime @default(now())
+
+  @@index([patientId, uploadedAt])
 }

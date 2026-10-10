@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api, { getError } from '../../api/axios';
 import useFetch from '../../hooks/useFetch';
+import DocumentList from '../../components/DocumentList';
 import {
   Page, Card, Field, Loading, ErrorMsg, Empty, NeedsApproval,
   inputCls, btnCls, btnLightCls, fmtDate,
@@ -115,6 +116,7 @@ export default function PatientView() {
   const { healthId } = useParams();
   const summary = useFetch(`/doctors/patients/${healthId}/summary`);
   const records = useFetch(`/doctors/patients/${healthId}/records`);
+  const documents = useFetch(`/doctors/patients/${healthId}/documents`);
 
   // 403 here means the grant is missing, expired or revoked
   const blocked = summary.error;
@@ -151,6 +153,14 @@ export default function PatientView() {
                   ) : <p className="text-sm text-slate-500">None recorded.</p>}
                 </div>
               </div>
+            </Card>
+
+            <Card title="Documents uploaded by the patient">
+              {documents.loading && <Loading />}
+              <ErrorMsg>{documents.error}</ErrorMsg>
+              {documents.data && (
+                <DocumentList documents={documents.data} url={`/doctors/patients/${healthId}/documents`} />
+              )}
             </Card>
 
             <AddVisit healthId={healthId} onSaved={records.reload} />
