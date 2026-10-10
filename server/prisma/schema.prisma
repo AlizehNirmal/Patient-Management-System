@@ -162,6 +162,16 @@ model AccessLog {
   @@index([patientId, createdAt])
 }
 
+// A 6-digit code emailed to a person who is registering, to prove the email is really theirs.
+// Only a scrambled copy of the code is stored.
+model EmailCode {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+}
+
 // A file the patient uploaded (report, prescription, test result).
 // The file itself is kept in the "data" column, so no extra storage service is needed.
 model Document {

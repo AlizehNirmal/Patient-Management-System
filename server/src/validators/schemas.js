@@ -10,10 +10,15 @@ const optionalDate = z.preprocess(
 );
 
 // ---------- Auth ----------
+const email = z.string().trim().toLowerCase().email('Enter a valid email address');
+
+const sendCode = z.object({ email });
+
 const account = {
-  email: z.string().trim().toLowerCase().email('Enter a valid email address'),
+  email,
   password: z.string().min(8, 'Password must be at least 8 characters').max(100),
   fullName: text(100),
+  code: z.string('Enter the 6-digit code from your email').trim().regex(/^\d{6}$/, 'Enter the 6-digit code from your email'),
 };
 
 // Only PATIENT and DOCTOR can register. ADMIN is rejected here.
@@ -33,7 +38,7 @@ const register = z.discriminatedUnion(
 );
 
 const login = z.object({
-  email: z.string().trim().toLowerCase().email('Enter a valid email address'),
+  email,
   password: z.string().min(1, 'Password is required'),
 });
 
@@ -102,6 +107,6 @@ const record = z.object({
 const verifyDoctor = z.object({ status: z.enum(['APPROVED', 'REJECTED']) });
 
 module.exports = {
-  register, login, profile, allergy, condition, emergencyCard, document,
+  sendCode, register, login, profile, allergy, condition, emergencyCard, document,
   accessRequest, approve, record, verifyDoctor,
 };

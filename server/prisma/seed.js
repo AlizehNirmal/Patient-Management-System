@@ -91,6 +91,54 @@ async function main() {
       allergies: [],
       conditions: [],
     },
+    {
+      email: 'patient4@medipass.test',
+      healthId: 'MP-100004',
+      fullName: 'Ahmed Raza',
+      dob: new Date('1972-01-18'),
+      gender: 'Male',
+      phone: '0303-7777777',
+      bloodGroup: 'AB+',
+      address: 'Model Town, Lahore',
+      emergencyContactName: 'Zainab Raza',
+      emergencyContactPhone: '0303-8888888',
+      allergies: [{ allergen: 'Ibuprofen', reaction: 'Stomach pain', severity: 'mild' }],
+      conditions: [
+        { name: 'High blood pressure', diagnosedOn: new Date('2012-09-10'), status: 'ongoing' },
+        { name: 'High cholesterol', diagnosedOn: new Date('2018-03-22'), status: 'ongoing' },
+      ],
+    },
+    {
+      email: 'patient5@medipass.test',
+      healthId: 'MP-100005',
+      fullName: 'Maryam Siddiqui',
+      dob: new Date('1993-06-30'),
+      gender: 'Female',
+      phone: '0304-1212121',
+      bloodGroup: 'O-',
+      address: 'Hayatabad, Peshawar',
+      emergencyContactName: 'Kamran Siddiqui',
+      emergencyContactPhone: '0304-3434343',
+      allergies: [
+        { allergen: 'Sulfa', reaction: 'Swelling of the face', severity: 'severe' },
+        { allergen: 'Peanuts', reaction: 'Hives', severity: 'mild' },
+      ],
+      conditions: [{ name: 'Migraine', diagnosedOn: new Date('2020-11-05'), status: 'ongoing' }],
+    },
+    {
+      email: 'patient6@medipass.test',
+      healthId: 'MP-100006',
+      fullName: 'Hamza Sheikh',
+      dob: new Date('2008-12-09'),
+      gender: 'Male',
+      phone: '0305-5656565',
+      bloodGroup: 'A+',
+      address: 'Cantt, Multan',
+      emergencyContactName: 'Rabia Sheikh',
+      emergencyContactPhone: '0305-7878787',
+      allergies: [{ allergen: 'Amoxicillin', reaction: 'Skin rash', severity: 'mild' }],
+      conditions: [{ name: 'Type 1 diabetes', diagnosedOn: new Date('2016-04-14'), status: 'ongoing' }],
+    },
   ];
 
   for (const { email, allergies, conditions, ...profile } of patients) {
@@ -131,7 +179,7 @@ async function main() {
   console.log('Seed finished. Demo accounts:');
   console.log('  admin@medipass.test');
   console.log('  doctor1@medipass.test (approved), doctor2@medipass.test (pending)');
-  console.log('  patient1@medipass.test, patient2@medipass.test, patient3@medipass.test');
+  console.log('  patient1@medipass.test to patient6@medipass.test (Health IDs MP-100001 to MP-100006)');
   console.log(`  Password for all of them: ${DEMO_PASSWORD}`);
 }
 

@@ -70,6 +70,9 @@ Created by `npm run seed`. All use the password `Demo@1234`.
 | Patient (Health ID MP-100001) | `patient1@medipass.test` |
 | Patient (Health ID MP-100002) | `patient2@medipass.test` |
 | Patient (Health ID MP-100003) | `patient3@medipass.test` |
+| Patient (Health ID MP-100004) | `patient4@medipass.test` |
+| Patient (Health ID MP-100005) | `patient5@medipass.test` |
+| Patient (Health ID MP-100006) | `patient6@medipass.test` |
 
 These are for local demos only. Do not use this password on a public deployment.
 
@@ -90,7 +93,7 @@ These are for local demos only. Do not use this password on a public deployment.
 
 | Area | Routes |
 |---|---|
-| Auth | `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me` |
+| Auth | `POST /api/auth/send-code`, `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me` |
 | Patient | `/api/patients/me` (profile, allergies, conditions, documents, emergency-card, records, logs) |
 | Consent | `/api/access/request`, `/requests`, `/active`, `/:id/approve`, `/:id/deny`, `/:id/revoke` |
 | Doctor | `/api/doctors/patients/:healthId/summary`, `/records`, `/documents` |
@@ -129,3 +132,10 @@ To create the demo accounts on the hosted database, run `npm run seed` once from
 or from your PC with `DATABASE_URL` and `SEED_PASSWORD` set to the hosted values.
 
 Uploaded documents are stored inside the database, so no separate file storage is needed.
+
+### Email verification codes
+
+A new user must type a 6-digit code that is emailed to them before the account is created.
+Emails are sent through Brevo (brevo.com, free plan). On Render add two more environment variables:
+`BREVO_API_KEY` (from Brevo, under SMTP & API, API keys) and `MAIL_FROM` (the sender email you
+verified in Brevo). On your own PC leave them empty: the code is printed in the API terminal instead.
