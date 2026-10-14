@@ -23,7 +23,7 @@ const guard = (role, page) => <ProtectedRoute role={role}>{page}</ProtectedRoute
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
+    <div className="min-h-screen bg-slate-50 pb-16 text-slate-800 sm:pb-0">
       <Routes>
         {/* Public emergency page has no navbar */}
         <Route path="/emergency/:qrToken" element={<Emergency />} />
