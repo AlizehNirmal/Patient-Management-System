@@ -13,7 +13,7 @@ export const btnDangerCls =
 
 export function Page({ title, children }) {
   return (
-    <main className="mx-auto max-w-4xl space-y-6 px-4 py-8">
+    <main className="w-full space-y-6 px-4 py-6 sm:px-6 lg:px-10">
       {title && <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>}
       {children}
     </main>
