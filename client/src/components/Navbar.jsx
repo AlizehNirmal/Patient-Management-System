@@ -10,6 +10,12 @@ const links = {
     ['/patient/timeline', 'Timeline', Clock],
     ['/patient/documents', 'Documents', FileText],
     ['/patient/logs', 'Access log', ScrollText],
+    ['/patient', 'Access'],
+    ['/patient/profile', 'Profile'],
+    ['/patient/card', 'Health card'],
+    ['/patient/timeline', 'Timeline'],
+    ['/patient/documents', 'Documents'],
+    ['/patient/logs', 'Access log'],
   ],
   DOCTOR: [
     ['/doctor', 'Dashboard', LayoutDashboard],

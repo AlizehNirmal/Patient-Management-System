@@ -7,6 +7,7 @@ const HttpError = require('../utils/httpError');
 const validate = require('../middleware/validate');
 const { authenticate } = require('../middleware/auth');
 const generateHealthId = require('../services/healthId');
+const { sendEmailCode, checkEmailCode } = require('../services/emailCode');
 const schemas = require('../validators/schemas');
 
 const router = express.Router();
@@ -22,12 +23,24 @@ const publicUser = (user) => ({ id: user.id, email: user.email, role: user.role 
 const signToken = (user) =>
   jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-// POST /api/auth/register
-router.post('/register', authLimiter, validate(schemas.register), async (req, res) => {
-  const { role, email, password, fullName, specialization, licenseNo, hospitalName } = req.body;
-
+async function mustBeNewEmail(email) {
   const exists = await prisma.user.findUnique({ where: { email } });
   if (exists) throw new HttpError(409, 'An account with this email already exists');
+}
+
+// POST /api/auth/send-code  (step 1 of registering: email a 6-digit code)
+router.post('/send-code', authLimiter, validate(schemas.sendCode), async (req, res) => {
+  await mustBeNewEmail(req.body.email);
+  await sendEmailCode(req.body.email);
+  res.json({ success: true });
+});
+
+// POST /api/auth/register  (step 2: create the account if the code is right)
+router.post('/register', authLimiter, validate(schemas.register), async (req, res) => {
+  const { role, email, password, fullName, code, specialization, licenseNo, hospitalName } = req.body;
+
+  await mustBeNewEmail(email);
+  await checkEmailCode(email, code);
 
   const passwordHash = await bcrypt.hash(password, 10);
   const profile =
@@ -36,6 +49,7 @@ router.post('/register', authLimiter, validate(schemas.register), async (req, re
       : { doctor: { create: { fullName, specialization, licenseNo, hospitalName } } };
 
   const user = await prisma.user.create({ data: { email, passwordHash, role, ...profile } });
+  await prisma.emailCode.delete({ where: { email } }); // a code can be used only once
   res.status(201).json({ token: signToken(user), user: publicUser(user) });
 });
 

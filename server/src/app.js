@@ -7,6 +7,9 @@ const HttpError = require('./utils/httpError');
 
 const app = express();
 
+// Hosting services put the app behind a proxy; this lets the rate limiter see the real visitor address
+app.set('trust proxy', 1);
+
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
@@ -35,6 +38,9 @@ app.use((err, req, res, next) => {
   }
   if (err instanceof HttpError) {
     return res.status(err.status).json({ error: err.message });
+  }
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ error: 'File is too large. The limit is 5 MB.' });
   }
   if (err.type === 'entity.parse.failed') {
     return res.status(400).json({ error: 'Request body is not valid JSON' });

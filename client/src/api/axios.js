@@ -26,6 +26,15 @@ export function dropEmpty(obj) {
   return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== ''));
 }
 
+// Fetches a protected file with the token and saves it on the user's device
+export async function downloadFile(url, fileName) {
+  const res = await api.get(url, { responseType: 'blob' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(res.data);
+  link.download = fileName;
+  link.click();
+}
+
 // Turn any error into a simple message string
 export function getError(err) {
   return err.response?.data?.error || 'Something went wrong. Please try again.';

@@ -10,6 +10,7 @@ import AccessRequests from './pages/patient/AccessRequests';
 import Profile from './pages/patient/Profile';
 import HealthCard from './pages/patient/HealthCard';
 import Timeline from './pages/patient/Timeline';
+import Documents from './pages/patient/Documents';
 import AccessLog from './pages/patient/AccessLog';
 
 import DoctorHome from './pages/doctor/DoctorHome';
@@ -42,6 +43,7 @@ export default function App() {
                 <Route path="/patient/profile" element={guard('PATIENT', <Profile />)} />
                 <Route path="/patient/card" element={guard('PATIENT', <HealthCard />)} />
                 <Route path="/patient/timeline" element={guard('PATIENT', <Timeline />)} />
+                <Route path="/patient/documents" element={guard('PATIENT', <Documents />)} />
                 <Route path="/patient/logs" element={guard('PATIENT', <AccessLog />)} />
 
                 <Route path="/doctor" element={guard('DOCTOR', <DoctorHome />)} />
