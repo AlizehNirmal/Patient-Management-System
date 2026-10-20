@@ -38,7 +38,7 @@ export default function Navbar() {
   const profilePath = user?.role === 'PATIENT' ? '/patient/profile' : homeFor(user?.role);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-slate-200 bg-white">
       <div className="flex items-center justify-between px-4 py-2 sm:px-6 lg:px-10">
         {/* Logo */}
         <Link to={user ? homeFor(user.role) : '/login'} className="flex items-center gap-2">
